@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-root="./">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guava transcripts</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar" aria-label="Episodes">
+    <div class="side-head">
+      <h1>Guava transcripts</h1>
+      <button id="close-side" class="icon-btn only-narrow" aria-label="Close episode list">×</button>
+    </div>
+    <div class="filters">
+      <label>Model <select id="f-model"></select></label>
+      <label>Task <select id="f-task"></select></label>
+      <label>Outcome
+        <select id="f-outcome">
+          <option value="">All</option>
+          <option value="success">Success</option>
+          <option value="fail">Fail</option>
+        </select>
+      </label>
+    </div>
+    <div id="counts" class="muted"></div>
+    <nav id="ep-list"></nav>
+    <div class="keys muted">Keys: <kbd>space</kbd> play/pause · <kbd>j</kbd>/<kbd>k</kbd> next/prev turn</div>
+  </aside>
+  <div id="scrim" class="only-narrow" hidden></div>
+  <main id="main">
+    <header id="ep-header">
+      <div class="hdr-top">
+        <button id="open-side" class="btn only-narrow" aria-label="Show episode list">☰ Episodes</button>
+        <h2 id="hdr-task"></h2>
+        <button id="cmp-btn" class="btn" hidden></button>
+      </div>
+      <p id="hdr-instr"></p>
+      <div id="hdr-stats"></div>
+    </header>
+    <div id="panes"><p class="empty">Loading…</p></div>
+  </main>
+</div>
+<dialog id="lightbox"><form method="dialog"><button class="icon-btn" aria-label="Close">×</button></form><img alt="Observation"></dialog>
+<script src="app.js"></script>
+</body>
+</html>
