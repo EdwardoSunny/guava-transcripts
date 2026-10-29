@@ -66,12 +66,6 @@ async function loadEpisode(entry) {
   if (!state.cache.has(entry.path)) state.cache.set(entry.path, getJSON(entry.path));
   return state.cache.get(entry.path);
 }
-// One probe per page load: does the static host serve byte ranges? (HEAD: no body to abort.)
-let rangeProbe = null;
-function rangeSupported(src) {
-  rangeProbe ??= fetch(src, { method: "HEAD" }).then((r) => /\bbytes\b/i.test(r.headers.get("accept-ranges") || ""));
-  return rangeProbe;
-}
 
 // Same task, other model, same seed (fallback: same episode number).
 function pairOf(entry) {
@@ -170,21 +164,22 @@ class Pane {
   }
 
   // Seeking needs HTTP Range support; GitHub Pages has it, `python -m http.server` does not.
-  // Without it Chrome cannot seek past what is buffered, so download the (small) MP4 whole instead.
+  // Probe with a 2-byte range request: a 206 means stream from the URL; a 200 means the server
+  // ignored the range and sent the whole (small) MP4, which becomes a seekable blob.
   async setSource(src) {
-    let viaBlob = false;
+    let use = src;
     try {
-      viaBlob = !(await rangeSupported(src));
-      if (viaBlob && !this.destroyed) {
-        const r = await fetch(src);
-        if (!r.ok) throw new Error(`${r.status}`);
-        this.blobUrl = URL.createObjectURL(await r.blob());
+      const r = await fetch(src, { headers: { Range: "bytes=0-1" } });
+      if (r.status === 200) {
+        const blob = await r.blob();
+        if (!this.destroyed) use = this.blobUrl = URL.createObjectURL(blob);
+      } else {
+        await r.arrayBuffer();
       }
     } catch {
-      viaBlob = false; // fall through to the plain URL so the <video> error handler reports the failure
+      // fall through to the plain URL so the <video> error handler reports the failure
     }
-    if (this.destroyed) { if (this.blobUrl) URL.revokeObjectURL(this.blobUrl); return; }
-    this.video.src = viaBlob ? this.blobUrl : src;
+    if (!this.destroyed) this.video.src = use;
   }
 
   // Episode-level material that is not tied to one turn: prompts, final frame, Markdown transcript.
@@ -261,7 +256,9 @@ class Pane {
     const d = this.video.duration;
     this.nowEl.replaceChildren(
       h("span", {}, h("b", {}, fmtTime(t)), ` / ${fmtTime(num(d) ? d : this.turns.at(-1)?.video_end_s)}`),
-      h("span", {}, this.cur >= 0 ? h("b", {}, `Turn ${this.turns[this.cur].index ?? this.cur} of ${this.turns.length}`) : `${this.turns.length} turns`));
+      h("span", {}, this.cur >= 0
+        ? [h("b", {}, `Turn ${this.turns[this.cur].index ?? this.cur}`), ` (${this.cur + 1} of ${this.turns.length})`]
+        : `${this.turns.length} turns`));
   }
 
   setCur(i, scroll = true) {

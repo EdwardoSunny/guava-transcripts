@@ -5,6 +5,7 @@
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --side-w: 300px;
+  --turns-min: min(40vh, 280px); /* smallest turn list when video and turns are stacked */
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -59,7 +60,7 @@ kbd { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 3px;
 #main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 #ep-header { padding: 10px 16px 8px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .hdr-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-#hdr-task { margin: 0; font-size: 17px; overflow-wrap: anywhere; flex: 1; min-width: 0; }
+#hdr-task { margin: 0; font-size: 17px; overflow-wrap: break-word; flex: 1 1 9em; min-width: 0; } /* basis: button wraps before the title breaks */
 #hdr-instr { margin: 4px 0 6px; font-size: 15px; overflow-wrap: anywhere; }
 #hdr-stats { display: flex; flex-direction: column; gap: 3px; }
 .stats { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; }
@@ -86,8 +87,10 @@ kbd { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 3px;
 .ctx .links { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; }
 .ctx pre { max-height: 25vh; overflow-y: auto; }
 a { color: var(--accent); }
-#panes.compare .pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); }
+/* stacked panes: the turn track keeps --turns-min; expanding prompts scrolls the pane area instead of squeezing it */
+#panes.compare .pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(var(--turns-min), 1fr); }
 #panes.compare .player video { max-height: 34vh; }
+#panes.compare { overflow-y: auto; }
 
 /* ---------- turns ---------- */
 .turns { list-style: none; margin: 0; padding: 0 4px 0 0; overflow-y: auto; min-height: 0; position: relative; }
@@ -124,9 +127,10 @@ dialog#lightbox .icon-btn { color: #fff; }
 
 /* ---------- medium: stack video above turns ---------- */
 @media (max-width: 1100px) {
-  .pane, #panes.compare .pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); }
-  .pane.single { grid-template-rows: auto minmax(0, 1fr); }
+  .pane, #panes.compare .pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(var(--turns-min), 1fr); }
+  .pane.single { grid-template-rows: auto minmax(var(--turns-min), 1fr); }
   .player video { max-height: 40vh; }
+  #panes { overflow-y: auto; }
 }
 
 /* ---------- narrow: sidebar becomes a drawer ---------- */
