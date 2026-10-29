@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guava transcripts</title>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="app.css?v=ff76c1654c">
+<link rel="stylesheet" href="app.css?v=fb1251dfbf">
 </head>
 <body>
 <div id="app">
@@ -14,7 +14,12 @@
       <h1>Guava transcripts</h1>
       <button id="close-side" class="icon-btn only-narrow" aria-label="Close episode list">×</button>
     </div>
+    <nav class="views">
+      <a id="nav-episodes" href="#">Episodes</a>
+      <a id="nav-awareness" href="#view=awareness" hidden>Awareness</a>
+    </nav>
     <div class="filters">
+      <label>Run <select id="f-run"></select></label>
       <label>Model <select id="f-model"></select></label>
       <label>Task <select id="f-task"></select></label>
       <label>Outcome
@@ -35,7 +40,7 @@
       <div class="hdr-top">
         <button id="open-side" class="btn only-narrow" aria-label="Show episode list">☰ Episodes</button>
         <h2 id="hdr-task"></h2>
-        <button id="cmp-btn" class="btn" hidden></button>
+        <label id="cmp-wrap" hidden><span class="sr-only">Compare</span><select id="cmp-sel" class="btn"></select></label>
       </div>
       <p id="hdr-instr"></p>
       <div id="hdr-stats"></div>
@@ -44,6 +49,6 @@
   </main>
 </div>
 <dialog id="lightbox"><form method="dialog"><button class="icon-btn" aria-label="Close">×</button></form><img alt="Observation"></dialog>
-<script src="app.js?v=763faf286b"></script>
+<script src="app.js?v=a73b7e565e"></script>
 </body>
 </html>
